@@ -1,0 +1,27 @@
+Configuration:
+  status: warn
+  name: DatabaseConnector
+  Properties:
+    property:
+      -
+        name: "logDir"
+        value: "logs/database_connector/logs"
+      -
+        name: "logFilename"
+        value: "database_connector.log"
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    File:
+      name: File_Appender
+      fileName: ${logDir}/${logFilename}
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console_Appender
