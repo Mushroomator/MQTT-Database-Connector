@@ -16,13 +16,14 @@ Program which subscribes to all messages sent to a MQTT message broker and then 
 ## Usage
 You can run the image with a simple docker command which must contain all the mandatory environment variables. See [section "Environment variables"](#environment-variables) for more information on those. The container will connect on port 5432 (= PostgreSQL default port) to the database.
 ```bash
-docker run -d thomaspilz/mqtt-database-connector:$COMMIT_SHA \
+docker run -d \
   -e MQTT_MSG_BROKER_URL=tcp://mosquitto:1883 \
   -e MQTT_CLIENT_ID=mqtt-database-connector \
   -e POSTGRES_DB_DOMAIN=database-connector \
   -e POSTGRES_DB=yourDatabase \
   -e POSTGRES_USER=yourUsername \
-  -e POSTGRES_PW=yourPassword
+  -e POSTGRES_PW=yourPassword \
+  thomaspilz/mqtt-database-connector:$COMMIT_SHA
 ```
 `$COMMIT_SHA` must be replaced with the first seven characters of the corresponding Github commit hash.
 
