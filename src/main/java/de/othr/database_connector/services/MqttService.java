@@ -14,9 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-import com.fasterxml.jackson.databind.JsonNode;
+
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.othr.database_connector.helpers.Validator;
 import de.othr.database_connector.kpi.KpiMsg;
 import org.eclipse.paho.mqttv5.client.*;
 import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
@@ -37,10 +37,11 @@ public class MqttService implements MqttCallback {
 
     private static final Logger logger = LoggerFactory.getLogger(MqttService.class);
     private Consumer<KpiMsg> onValidMessageListener;
-    private MqttClientPersistence persistence;
-    private MqttConnectionOptions connectionOptions;
-    private String msgBrokerUrl;
-    private String clientId;
+    private final MqttClientPersistence persistence;
+    private final MqttConnectionOptions connectionOptions;
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private final String msgBrokerUrl;
+    private final String clientId;
 
 
     public MqttService(String msgBrokerUrl, String clientId, Consumer<KpiMsg> onValidMessageListener) {
@@ -57,14 +58,26 @@ public class MqttService implements MqttCallback {
     }
 
     public MqttService(String msgBrokerUrl, String clientId){
-        new MqttService(msgBrokerUrl, clientId, msg -> {});
+        this(msgBrokerUrl, clientId, msg -> {});
     }
 
     public void connectAndSubscribeAll(){
         try {
             // Use async MQTT client for better performance/ non-blocking operations
+            logger.info("Attempting to connect to {} as {}", msgBrokerUrl, clientId);
             var client = new MqttAsyncClient(msgBrokerUrl, clientId, persistence);
-            var conToken = client.connect(connectionOptions);
+            client.setCallback(this);
+            var conToken = client.connect(connectionOptions, new MqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    logger.warn("Failed to connect to {}", msgBrokerUrl, exception);
+                }
+            });
             conToken.waitForCompletion();
             client.subscribe("#", 0);
         } catch (MqttException e) {
@@ -97,7 +110,8 @@ public class MqttService implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         logger.debug("Received message of topic {}", topic);
-        JsonNode msg = null;
+/*        JsonNode msg = null;
+
         try {
             msg = new ObjectMapper().readTree(message.getPayload());
         } catch (IOException e){
@@ -109,8 +123,18 @@ public class MqttService implements MqttCallback {
             logger.warn(validation.getErrMsg());
             return;
         }
+        System.out.println("parsed");*/
         // now we know the type of the message; No need to catch DatabindException as validator ensures message has the right format
-        KpiMsg kpiMsg = new ObjectMapper().readValue(message.getPayload(), KpiMsg.class);
+        KpiMsg kpiMsg;
+        try {
+            kpiMsg = jsonMapper.readValue(message.getPayload(), KpiMsg.class);
+        } catch (DatabindException e){
+            logger.warn("Received message does not conform to required structure.", e);
+            return;
+        } catch (IOException e){
+            logger.warn("Could not parse message for topic {}", topic, e);
+            return;
+        }
         logger.debug("Parsed message: {}", kpiMsg.toString());
         onValidMessageListener.accept(kpiMsg);
     }

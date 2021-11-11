@@ -35,4 +35,17 @@ public class EnvironmentVariables {
         this.mqttClientId = mqttClientId;
         this.mqttMsgBrokerUrl = mqttMsgBrokerUrl;
     }
+
+    @Override
+    public String toString() {
+        return
+        """        
+        \tPOSTGRES_DB_DOMAIN=%s
+        \tPOSTGRES_USER=%s
+        \tPOSTGRES_DB=%s
+        \tPOSTGRES_PW=%s
+        \tMQTT_CLIENT_ID=%s
+        \tMQTT_MSG_BROKER_URL=%s
+        """.formatted(postgresDbDomain, postgresUser, postgresDb, "***", mqttClientId, mqttMsgBrokerUrl);
+    }
 }

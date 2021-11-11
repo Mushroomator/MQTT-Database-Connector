@@ -36,7 +36,6 @@ public class DatabaseConnector {
 
         var jdbcPostgresPrefix = "jdbc:postgresql://";
         var envs = readEnvs();
-
         // Connect do PostgreSQL database
         db.connect2db(String.format("%s%s/%s", jdbcPostgresPrefix, envs.postgresDbDomain, envs.postgresDb), envs.postgresUser, envs.postgresPw);
 
@@ -92,6 +91,8 @@ public class DatabaseConnector {
             logger.error("Environment variable MQTT_MSG_BROKER_URL must be specified!");
             System.exit(1);
         }
-        return new EnvironmentVariables(postgresDbDomain, postgresUser, postgresDb, postgresPw, mqttClientId, mqttMsgBrokerUrl);
+        var envs = new EnvironmentVariables(postgresDbDomain, postgresUser, postgresDb, postgresPw, mqttClientId, mqttMsgBrokerUrl);
+        logger.info("Read configuration from environment variables: \n{}", envs);
+        return envs;
     }
 }

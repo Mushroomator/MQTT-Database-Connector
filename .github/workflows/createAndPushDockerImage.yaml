@@ -1,0 +1,91 @@
+# ---------------------------------------------------------------------------------------
+# CI/ CD Pipeline: MQTT Database Connector
+#
+# Description: Builds a Docker image for MQTT Database Connector and pushes
+#              it to Github container registry (ghcr.io) as well as Dockerhub.
+#              All images will by default be named according to the following pattern:
+#               {container registry}/{username}/mqtt-database-connector:{short commit sha}
+#
+# Date: 2021/10/25
+# Author: Thomas Pilz
+# ---------------------------------------------------------------------------------------
+name: Create and publish Docker image for JSON Schema Containment Checker
+
+on:
+  # Trigger workflow when someone pushed to "main"
+  push:
+    branches: ["main"]
+
+env:
+  # Github Container Registry
+  GH_USERNAME: Mushroomator
+  GH_REGISTRY: ghcr.io
+  # Dockerhub
+  DH_USERNAME: thomaspilz
+  DH_REGISTRY: docker.io
+  # Docker image name
+  IMAGE_NAME: mqtt-database-connector
+
+jobs:
+  build-and-push-image:
+    # Run on Ubuntu VM provided by Github
+    runs-on: ubuntu-latest
+    # Permissions to read and write to Github container registry are required
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+
+      # Login to Github container registry
+      - name: Log in to the container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.GH_REGISTRY }}
+          username: ${{ env.GH_USERNAME }}
+          password: ${{ github.token }}
+
+      # Login to Dockerhub
+      - name: Log in to the container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.DH_REGISTRY }}
+          username: ${{ env.DH_USERNAME }}
+          password: ${{ secrets.DH_PASSWORD }}
+
+      # Create outputs used in build and push step to build and push the repository
+      # Images are tagged with the short version of the current commit SHA.
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ env.GH_REGISTRY }}/${{ env.GH_USERNAME }}/${{ env.IMAGE_NAME }}
+            ${{ env.DH_REGISTRY }}/${{ env.DH_USERNAME }}/${{ env.IMAGE_NAME }}
+          # Set default labels to correct values
+          labels: |
+            org.opencontainers.image.title=MQTT Database Connector
+            org.opencontainers.image.description=Program which subscribes to all messages sent to a MQTT message broker and then puts relevant messages containing KPIs in a PostgreSQL database.
+            org.opencontainers.image.vendor=OTH Regensburg
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}/pkgs/container/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          # use short SHA without a prefix as tag and tag every new image with the latest tag
+          tags: |
+            type=sha,format=short,prefix=
+            latest
+          password: ${{ secrets.DH_PASSWORD }}
+          # use Github Token created for each workflow run to authenticate to Github Container Registry
+          github-token: ${{ github.token }}
+
+      # Build and push the Docker images using tags and labels from previous step
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

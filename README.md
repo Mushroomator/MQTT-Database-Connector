@@ -1,21 +1,23 @@
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
-# Database Connector
+# MQTT Database Connector
 Program which subscribes to all messages sent to a MQTT message broker and then puts relevant messages containing KPIs in a PostgreSQL database.
 
+> This repository is part of the [MQTT KPI Collection Project](https://github.com/Mushroomator/MQTT-KPI-Collection-Project).
+
 ## Table of Contents
-- [Database Connector](#database-connector)
+- [MQTT Database Connector](#mqtt-database-connector)
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
   - [Environment variables](#environment-variables)
   - [License](#license)
 
 ## Usage
-You can run the image with a simple docker command which must contain all the mandatory environment variables. See [section "Environment variables"](#environment-variables) for more information on those.
+You can run the image with a simple docker command which must contain all the mandatory environment variables. See [section "Environment variables"](#environment-variables) for more information on those. The container will connect on port 5432 (= PostgreSQL default port) to the database.
 ```bash
-docker run -d thomaspilz/database-connector:$COMMIT_SHA \
+docker run -d thomaspilz/mqtt-database-connector:$COMMIT_SHA \
   -e MQTT_MSG_BROKER_URL=tcp://mosquitto:1883 \
-  -e MQTT_CLIENT_ID=database-connector \
+  -e MQTT_CLIENT_ID=mqtt-database-connector \
   -e POSTGRES_DB_DOMAIN=database-connector \
   -e POSTGRES_DB=yourDatabase \
   -e POSTGRES_USER=yourUsername \
