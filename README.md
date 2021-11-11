@@ -1,5 +1,5 @@
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
-
+[![Create and publish Docker image](https://github.com/Mushroomator/MQTT-Database-Connector/actions/workflows/createAndPushDockerImage.yaml/badge.svg)](https://github.com/Mushroomator/MQTT-Database-Connector/actions/workflows/createAndPushDockerImage.yaml)
 # MQTT Database Connector
 Program which subscribes to all messages sent to a MQTT message broker and then puts relevant messages containing KPIs in a PostgreSQL database.
 

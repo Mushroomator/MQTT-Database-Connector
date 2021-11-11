@@ -9,7 +9,7 @@
 # Date: 2021/10/25
 # Author: Thomas Pilz
 # ---------------------------------------------------------------------------------------
-name: Create and publish Docker image for JSON Schema Containment Checker
+name: Create and publish Docker image
 
 on:
   # Trigger workflow when someone pushed to "main"
