@@ -40,7 +40,29 @@ There are a few environment variables available to set mandatory parameters/ opt
 | POSTGRES_PW         | Password for the given PostgreSQL username.                                                                                  | Yes        | -             |
 
 ## Docker image
-Every push on the main branch triggers an Github Action workflow which will build a Docker image and push it to [DockerHub](https://hub.docker.com/repository/docker/thomaspilz/mqtt-database-connector) as well as [Github Container Registry](https://github.com/Mushroomator/MQTT-Database-Connector/pkgs/container/mqtt-database-connector). Currently only the iamge on DockerHub is publicly available without authentication.
+Every push on the main branch triggers an Github Action workflow which will build a Docker image and push it to [DockerHub](https://hub.docker.com/repository/docker/thomaspilz/mqtt-database-connector) as well as [Github Container Registry](https://github.com/Mushroomator/MQTT-Database-Connector/pkgs/container/mqtt-database-connector). Both images are identical and publicly available without authentication so you may use either one based on your preferred Container Registry host. 
+
+```bash
+# Use Docker Dontainer Registry
+docker run -d \
+  -e MQTT_MSG_BROKER_URL=tcp://mosquitto:1883 \
+  -e MQTT_CLIENT_ID=mqtt-database-connector \
+  -e POSTGRES_DB_DOMAIN=database-connector \
+  -e POSTGRES_DB=yourDatabase \
+  -e POSTGRES_USER=yourUsername \
+  -e POSTGRES_PW=yourPassword \
+  thomaspilz/mqtt-database-connector:$COMMIT_SHA
+
+# Use Github Container Registry
+docker run -d \
+  -e MQTT_MSG_BROKER_URL=tcp://mosquitto:1883 \
+  -e MQTT_CLIENT_ID=mqtt-database-connector \
+  -e POSTGRES_DB_DOMAIN=database-connector \
+  -e POSTGRES_DB=yourDatabase \
+  -e POSTGRES_USER=yourUsername \
+  -e POSTGRES_PW=yourPassword \
+  ghcr.io/mushroomator/mqtt-database-connector:$COMMIT_SHA
+```
 
 ## License
 Copyright 2021 Thomas Pilz
