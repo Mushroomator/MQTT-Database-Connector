@@ -77,7 +77,6 @@ jobs:
           tags: |
             type=sha,format=short,prefix=
             latest
-          password: ${{ secrets.DH_PASSWORD }}
           # use Github Token created for each workflow run to authenticate to Github Container Registry
           github-token: ${{ github.token }}
 
