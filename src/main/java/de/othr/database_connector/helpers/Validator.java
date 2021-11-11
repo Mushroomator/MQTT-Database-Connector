@@ -20,7 +20,6 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
-import java.util.Arrays;
 import java.util.Set;
 
 /**

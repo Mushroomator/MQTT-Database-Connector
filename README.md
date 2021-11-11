@@ -10,6 +10,7 @@ Program which subscribes to all messages sent to a MQTT message broker and then 
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
   - [Environment variables](#environment-variables)
+  - [Docker image](#docker-image)
   - [License](#license)
 
 ## Usage
@@ -37,6 +38,8 @@ There are a few environment variables available to set mandatory parameters/ opt
 | POSTGRES_USER       | PostgreSQL username. Must have appropriate write permissions to insert KPIs into table.                                      | Yes        | -             |
 | POSTGRES_PW         | Password for the given PostgreSQL username.                                                                                  | Yes        | -             |
 
+## Docker image
+Every push on the main branch triggers an Github Action workflow which will build a Docker image and push it to [DockerHub](https://hub.docker.com/repository/docker/thomaspilz/mqtt-database-connector) as well as [Github Container Registry](https://github.com/Mushroomator/MQTT-Database-Connector/pkgs/container/mqtt-database-connector). Currently only the iamge on DockerHub is publicly available without authentication.
 
 ## License
 Copyright 2021 Thomas Pilz
